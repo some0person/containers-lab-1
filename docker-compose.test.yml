@@ -10,7 +10,7 @@ services:
       - test-network
 
   app:
-    image: ${APP_IMAGE}
+    image: ghcr.io/some0person/containers-lab-1/app:latest
     environment:
       DB_HOST: postgres
       DB_PASSWORD: secret
@@ -22,7 +22,7 @@ services:
       - test-network
 
   nginx:
-    image: ${NGINX_IMAGE}
+    image: ghcr.io/some0person/containers-lab-1/nginx:latest
     ports:
       - "80:80"
     depends_on:
