@@ -10,24 +10,27 @@ services:
       - test-network
 
   app:
-    image: ghcr.io/${{ github.repository }}/app:sha-${{ github.sha }}
+    image: ${APP_IMAGE}
     environment:
       DB_HOST: postgres
       DB_PASSWORD: secret
       DB_NAME: myapp_test
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
     networks:
       - test-network
 
   nginx:
-    image: ghcr.io/${{ github.repository }}/nginx:sha-${{ github.sha }}
+    image: ${NGINX_IMAGE}
     ports:
       - "80:80"
     depends_on:
-      - app
+      app:
+        condition: service_started
     networks:
       - test-network
 
 networks:
   test-network:
+    driver: bridge
