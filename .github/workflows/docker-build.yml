@@ -82,6 +82,22 @@ jobs:
       - name: Test the built images
         run: |
           docker compose -f docker-compose.test.yml up -d
-          sleep 30
-          curl -f http://localhost/health || exit 1
-          docker compose down
+          
+          # Ждем, пока приложение станет доступным
+          echo "Waiting for app to be ready..."
+          for i in {1..30}; do
+            if curl -s http://localhost:8080/api/health; then
+              echo "App is ready!"
+              break
+            fi
+            echo "Attempt $i: App not ready yet..."
+            sleep 2
+          done
+          
+          # Проверяем основную страницу
+          curl -f http://localhost:8080/ || exit 1
+          
+          # Проверяем API
+          curl -f http://localhost:8080/api/users || exit 1
+          
+          docker compose -f docker-compose.test.yml down
